@@ -1,0 +1,19 @@
+{
+  "basePath": "./../ADAL",
+  "readmePath": "./../ADAL/README.adoc",
+  "version": "0.1.9",
+  "modules": [
+    "adal",
+    "adal-utils",
+    "adal-accounts",
+    "adal-adapters",
+    "adal-analytics",
+    "adal-bus",
+    "adal-fragments",
+    "adal-managers",
+    "adal-network",
+    "adal-location"
+  ],
+  "bintrayUsername": "j",
+  "bintrayKey": "j"
+}
