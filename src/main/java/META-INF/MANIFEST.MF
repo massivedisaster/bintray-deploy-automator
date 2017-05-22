@@ -1,4 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: com.massivedisaster.bintraydeployautomator.BintrayDeployAu
- tomator
+Main-Class: com.massivedisaster.bintraydeployautomator.BintrayDeployAutomator
 
