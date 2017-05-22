@@ -15,7 +15,7 @@ Just build and create configuration file.
 
 ### Configuration file (configuration.json)
 The configuration file must be named `configuration.json`.
-```json
+```js
 // The json configuration
 {
   "basePath": "./project", // The path of your project
