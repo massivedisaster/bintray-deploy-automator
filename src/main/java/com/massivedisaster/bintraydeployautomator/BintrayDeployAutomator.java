@@ -47,6 +47,8 @@ public class BintrayDeployAutomator extends FileUtils {
     }
 
     private static void bintrayUpload(ProjectConnection gradleConnection, Configuration configuration) {
-        GradleUtils.runGradle(gradleConnection, configuration.getBintrayTasks(), configuration.getBintrayArguments());
+        for (String task: configuration.getBintrayTasks()) {
+            GradleUtils.runGradle(gradleConnection, new String[] {task}, configuration.getBintrayArguments());
+        }
     }
 }
