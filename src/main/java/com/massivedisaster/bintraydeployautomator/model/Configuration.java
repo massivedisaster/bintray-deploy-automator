@@ -61,8 +61,13 @@ public class Configuration {
         return bintrayTasks;
     }
 
-    public String getBintrayArguments() {
-        return String.format("-PbintrayUser=\"%s\" -PbintrayKey=\"%s\" -PdryRun=false -Pskippasswordprompts", bintrayUsername, bintrayKey);
+    public String[] getBintrayArguments() {
+        return new String[] {
+                String.format("-PbintrayUser=\"%s\"", bintrayUsername),
+                String.format("-PbintrayKey=\"%s\"", bintrayKey),
+                "-PdryRun=false",
+                "-Pskippasswordprompts"          
+        };
     }
 
     public String[] getRebuildTasks() {
