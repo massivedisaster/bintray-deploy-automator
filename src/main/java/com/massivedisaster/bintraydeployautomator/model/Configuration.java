@@ -63,8 +63,9 @@ public class Configuration {
 
     public String[] getBintrayArguments() {
         return new String[] {
-                String.format("-PbintrayUser=\"%s\"", bintrayUsername),
-                String.format("-PbintrayKey=\"%s\"", bintrayKey),
+                String.format("-PbintrayUser=%s", bintrayUsername),
+                String.format("-PbintrayKey=%s", bintrayKey),
+                String.format("-PlibraryVersionName=%s", version),
                 "-PdryRun=false",
                 "-Pskippasswordprompts"          
         };
