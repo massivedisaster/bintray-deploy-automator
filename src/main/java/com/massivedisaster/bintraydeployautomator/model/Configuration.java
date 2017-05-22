@@ -7,7 +7,7 @@ import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 import java.io.IOException;
 import java.util.List;
 
-import static com.massivedisaster.bintraydeployautomator.utils.Utils.readFile;
+import static com.massivedisaster.bintraydeployautomator.utils.FileUtils.readFile;
 
 public class Configuration {
     private String basePath = "./";
@@ -65,7 +65,11 @@ public class Configuration {
         return String.format("-PbintrayUser=\"%s\" -PbintrayKey=\"%s\" -PdryRun=false -Pskippasswordprompts", bintrayUsername, bintrayKey);
     }
 
-    public String getBuildArguments() {
+    public String[] getRebuildTasks() {
+        return new String[] {"clean", "build"};
+    }
+
+    public String getRebuildArguments() {
         return String.format("-PlibraryVersionName=%s", version);
     }
 

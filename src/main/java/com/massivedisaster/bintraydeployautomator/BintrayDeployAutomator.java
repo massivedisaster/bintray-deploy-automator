@@ -1,13 +1,14 @@
 package com.massivedisaster.bintraydeployautomator;
 
 import com.massivedisaster.bintraydeployautomator.model.Configuration;
-import com.massivedisaster.bintraydeployautomator.utils.Utils;
+import com.massivedisaster.bintraydeployautomator.utils.FileUtils;
+import com.massivedisaster.bintraydeployautomator.utils.GradleUtils;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
 import java.io.File;
 
-public class BintrayDeployAutomator extends Utils {
+public class BintrayDeployAutomator extends FileUtils {
 
     public static void main(String args[]) {
 
@@ -24,12 +25,12 @@ public class BintrayDeployAutomator extends Utils {
             // Clean and build all projects.
             rebuild(gradleConnection, configuration);
 
-            // Bintrayupload
+            // Bintrayupload.
             bintrayUpload(gradleConnection, configuration);
 
             // Replace version if needed.
             if (configuration.UpdateReadmeVersion()) {
-                Utils.replaceSemVerInFile(configuration.getVersion(), configuration.getReadmePath());
+                FileUtils.replaceSemVerInFile(configuration.getVersion(), configuration.getReadmePath());
             }
 
         } catch (Exception e) {
@@ -42,20 +43,10 @@ public class BintrayDeployAutomator extends Utils {
     }
 
     private static void rebuild(ProjectConnection gradleConnection, Configuration configuration) {
-        gradleConnection.newBuild()
-                .forTasks("clean", "build")
-                .withArguments(configuration.getBuildArguments())
-                .setStandardOutput(System.out)
-                .setStandardError(System.err)
-                .run();
+        GradleUtils.runGradle(gradleConnection, configuration.getRebuildTasks(), configuration.getRebuildArguments());
     }
 
     private static void bintrayUpload(ProjectConnection gradleConnection, Configuration configuration) {
-        gradleConnection.newBuild()
-                .forTasks(configuration.getBintrayTasks())
-                .withArguments(configuration.getBintrayArguments())
-                .setStandardOutput(System.out)
-                .setStandardError(System.err)
-                .run();
+        GradleUtils.runGradle(gradleConnection, configuration.getBintrayTasks(), configuration.getBintrayArguments());
     }
 }
