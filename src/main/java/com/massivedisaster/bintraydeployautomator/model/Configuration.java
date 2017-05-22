@@ -11,8 +11,8 @@ import static com.massivedisaster.bintraydeployautomator.utils.FileUtils.readFil
 
 public class Configuration {
     private String basePath = "./";
-    private String readmePath = "./";
-    private String version = "0.0.0";
+    private String readmePath;
+    private String version = "0.0.0-deploy_automator";
     private List<String> modules;
     private String bintrayUsername;
     private String bintrayKey;
@@ -80,6 +80,6 @@ public class Configuration {
     }
 
     public boolean UpdateReadmeVersion() {
-        return !StringUtils.isEmpty(readmePath) && !StringUtils.isEmpty(version);
+        return !StringUtils.isEmpty(readmePath);
     }
 }
