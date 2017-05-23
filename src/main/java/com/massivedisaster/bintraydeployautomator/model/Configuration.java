@@ -1,7 +1,6 @@
 package com.massivedisaster.bintraydeployautomator.model;
 
 import com.google.gson.Gson;
-import org.gradle.internal.impldep.org.apache.commons.lang.NullArgumentException;
 import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
@@ -46,22 +45,7 @@ public class Configuration {
         return bintrayKey;
     }
 
-    public String[] getBintrayTasks() {
-        if(modules == null){
-            throw new NullArgumentException("modules can't be null");
-        }
-
-        if(bintrayTasks == null){
-            int size = modules.size();
-            bintrayTasks = new String[size];
-            for (int i = 0; i <size ; i++) {
-                bintrayTasks[i] = modules.get(i)+":bintrayUpload";
-            }
-        }
-        return bintrayTasks;
-    }
-
-    public String[] getBintrayArguments() {
+    public String[] getRebuildAndBintrayDeployArguments() {
         return new String[] {
                 String.format("-PbintrayUser=%s", bintrayUsername),
                 String.format("-PbintrayKey=%s", bintrayKey),
@@ -71,12 +55,8 @@ public class Configuration {
         };
     }
 
-    public String[] getRebuildTasks() {
-        return new String[] {"clean", "build"};
-    }
-
-    public String getRebuildArguments() {
-        return String.format("-PlibraryVersionName=%s", version);
+    public String[] getRebuildAndBintrayDeployTasks() {
+        return new String[]{"clean", "build", "bintrayUpload"};
     }
 
     public boolean UpdateReadmeVersion() {
