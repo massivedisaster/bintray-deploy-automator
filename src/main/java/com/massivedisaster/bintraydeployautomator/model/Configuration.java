@@ -45,7 +45,7 @@ public class Configuration {
         return bintrayKey;
     }
 
-    public String[] getRebuildAndDeployArguments() {
+    public String[] getRebuildAndBintrayDeployArguments() {
         return new String[] {
                 String.format("-PbintrayUser=%s", bintrayUsername),
                 String.format("-PbintrayKey=%s", bintrayKey),
@@ -55,7 +55,7 @@ public class Configuration {
         };
     }
 
-    public String[] getRebuildAndDeployTasks() {
+    public String[] getRebuildAndBintrayDeployTasks() {
         return new String[]{"clean", "build", "bintrayUpload"};
     }
 

@@ -23,7 +23,7 @@ public class BintrayDeployAutomator extends FileUtils {
                     .connect();
 
             // Clean and build all projects.
-            rebuild(gradleConnection, configuration);
+            rebuildAndBintrayDeploy(gradleConnection, configuration);
 
             // Replace version if needed.
             if (configuration.UpdateReadmeVersion()) {
@@ -39,7 +39,7 @@ public class BintrayDeployAutomator extends FileUtils {
         }
     }
 
-    private static void rebuild(ProjectConnection gradleConnection, Configuration configuration) {
-        GradleUtils.runGradle(gradleConnection, configuration.getRebuildAndDeployTasks(), configuration.getRebuildAndDeployArguments());
+    private static void rebuildAndBintrayDeploy(ProjectConnection gradleConnection, Configuration configuration) {
+        GradleUtils.runGradle(gradleConnection, configuration.getRebuildAndBintrayDeployTasks(), configuration.getRebuildAndBintrayDeployArguments());
     }
 }
