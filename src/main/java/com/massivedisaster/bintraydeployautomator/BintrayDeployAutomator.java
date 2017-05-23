@@ -25,9 +25,6 @@ public class BintrayDeployAutomator extends FileUtils {
             // Clean and build all projects.
             rebuild(gradleConnection, configuration);
 
-            // Bintrayupload.
-            bintrayUpload(gradleConnection, configuration);
-
             // Replace version if needed.
             if (configuration.UpdateReadmeVersion()) {
                 FileUtils.replaceSemVerInFile(configuration.getVersion(), configuration.getReadmePath());
@@ -43,12 +40,6 @@ public class BintrayDeployAutomator extends FileUtils {
     }
 
     private static void rebuild(ProjectConnection gradleConnection, Configuration configuration) {
-        GradleUtils.runGradle(gradleConnection, configuration.getRebuildTasks(), configuration.getRebuildArguments());
-    }
-
-    private static void bintrayUpload(ProjectConnection gradleConnection, Configuration configuration) {
-        for (String task: configuration.getBintrayTasks()) {
-            GradleUtils.runGradle(gradleConnection, new String[] {task}, configuration.getBintrayArguments());
-        }
+        GradleUtils.runGradle(gradleConnection, configuration.getRebuildAndDeployTasks(), configuration.getRebuildAndDeployArguments());
     }
 }
