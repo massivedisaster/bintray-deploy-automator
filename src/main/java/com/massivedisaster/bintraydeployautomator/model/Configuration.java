@@ -1,6 +1,7 @@
 package com.massivedisaster.bintraydeployautomator.model;
 
 import com.google.gson.Gson;
+import com.massivedisaster.bintraydeployautomator.utils.ArrayUtils;
 
 import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 
@@ -107,7 +108,27 @@ public class Configuration {
      * @return tasks to run.
      */
     public String[] getTasks() {
-        return new String[]{"clean", "build", "bintrayUpload"};
+        return ArrayUtils.addAll(new String[]{"clean", "build"}, getBintrayTasks());
+    }
+
+    /**
+     * Get the bintray tasks from modules.
+     *
+     * @return list of bintray upload tasks.
+     */
+    private String[] getBintrayTasks() {
+        if (modules == null) {
+            throw new IllegalArgumentException("modules can't be null");
+        }
+
+        if (bintrayTasks == null) {
+            int size = modules.size();
+            bintrayTasks = new String[size];
+            for (int i = 0; i < size; i++) {
+                bintrayTasks[i] = modules.get(i) + ":bintrayUpload";
+            }
+        }
+        return bintrayTasks;
     }
 
     /**
