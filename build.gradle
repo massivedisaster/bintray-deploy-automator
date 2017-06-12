@@ -1,5 +1,5 @@
-group 'com.massivedisaster.bintraydeployautomator.BintrayDeployAutomator'
-version '1.0-SNAPSHOT'
+group 'com.massivedisaster.bintraydeployautomator.Automator'
+version '0.0.2'
 
 apply plugin: 'java'
 
@@ -14,4 +14,17 @@ dependencies {
     compile "org.gradle:gradle-tooling-api:3.5"
     compile 'com.google.code.gson:gson:2.8.0'
     runtime 'org.slf4j:slf4j-simple:1.7.10'
+}
+
+jar {
+    baseName 'BintrayDeployAutomator'
+
+    manifest {
+        attributes 'Main-Class': 'com.massivedisaster.bintraydeployautomator.Automator', 'version-number': version
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
 }
