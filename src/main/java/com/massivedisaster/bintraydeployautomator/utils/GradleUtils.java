@@ -1,7 +1,7 @@
 package com.massivedisaster.bintraydeployautomator.utils;
 
-import com.sun.istack.internal.NotNull;
 
+import com.massivedisaster.bintraydeployautomator.annotations.NotNull;
 import org.gradle.tooling.ProjectConnection;
 
 /**

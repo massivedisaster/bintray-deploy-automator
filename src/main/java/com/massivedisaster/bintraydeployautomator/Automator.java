@@ -3,7 +3,6 @@ package com.massivedisaster.bintraydeployautomator;
 import com.massivedisaster.bintraydeployautomator.model.Configuration;
 import com.massivedisaster.bintraydeployautomator.utils.FileUtils;
 import com.massivedisaster.bintraydeployautomator.utils.GradleUtils;
-
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
@@ -12,7 +11,7 @@ import java.io.File;
 /**
  * Bintray deploy automator.
  */
-public class BintrayDeployAutomator extends FileUtils {
+public class Automator extends FileUtils {
 
     /**
      * Main method.
@@ -40,7 +39,7 @@ public class BintrayDeployAutomator extends FileUtils {
             }
 
         } catch (Exception e) {
-            System.out.println("BintrayDeployAutomator Error: " + e.toString());
+            System.out.println("Automator Error: " + e.toString());
         } finally {
             if (gradleConnection != null) {
                 gradleConnection.close();
