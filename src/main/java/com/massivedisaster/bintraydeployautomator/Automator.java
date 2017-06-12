@@ -1,8 +1,10 @@
 package com.massivedisaster.bintraydeployautomator;
 
 import com.massivedisaster.bintraydeployautomator.model.Configuration;
+import com.massivedisaster.bintraydeployautomator.utils.CommandLineUtils;
 import com.massivedisaster.bintraydeployautomator.utils.FileUtils;
 import com.massivedisaster.bintraydeployautomator.utils.GradleUtils;
+import javafx.util.Pair;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
@@ -22,9 +24,13 @@ public class Automator extends FileUtils {
 
         ProjectConnection gradleConnection = null;
         try {
+            Pair<String, String> auth = CommandLineUtils.commandLineArgs(args);
 
             // Get configuration from .json.
             Configuration configuration = Configuration.parseConfiguration("configuration.json");
+
+            configuration.setBintrayUsername(auth.getKey());
+            configuration.setBintrayKey(auth.getValue());
 
             gradleConnection = GradleConnector.newConnector()
                     .forProjectDirectory(new File(configuration.getBasePath()))
@@ -47,8 +53,9 @@ public class Automator extends FileUtils {
         }
     }
 
+
     /**
-     * Rubuild and upload to bintray.
+     * Run build and upload to bintray.
      *
      * @param gradleConnection the gradle connection.
      * @param configuration    the configuration model.

@@ -10,8 +10,10 @@ At the end if no errors occurred it will update your readme specified configurat
 Configuration
 -------------
 ### Install
+Run `jar` task from gradle and create configuration file.
 
-Just build and create configuration file.
+### How to run
+`java -jar BintrayDeployAutomator.jar -u Username -k Key`
 
 ### Configuration file (configuration.json)
 The configuration file must be named `configuration.json`.
@@ -26,9 +28,7 @@ The configuration file must be named `configuration.json`.
     "module-1",
     "module-2",
     "module-3"
-  ],
-  "bintrayUsername": "{username}", // The bintray username
-  "bintrayKey": "{key}" // The api key of bintray
+  ]
 }
 ```
 ### License

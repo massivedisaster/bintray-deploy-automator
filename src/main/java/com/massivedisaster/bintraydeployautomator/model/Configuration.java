@@ -2,7 +2,6 @@ package com.massivedisaster.bintraydeployautomator.model;
 
 import com.google.gson.Gson;
 import com.massivedisaster.bintraydeployautomator.utils.ArrayUtils;
-
 import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
@@ -69,22 +68,12 @@ public class Configuration {
         return modules;
     }
 
-    /**
-     * Gets bintray username.
-     *
-     * @return bintray username.
-     */
-    public String getBintrayUsername() {
-        return bintrayUsername;
+    public void setBintrayUsername(String bintrayUsername) {
+        this.bintrayUsername = bintrayUsername;
     }
 
-    /**
-     * Gets bintray key.
-     *
-     * @return bintray key.
-     */
-    public String getBintrayKey() {
-        return bintrayKey;
+    public void setBintrayKey(String bintrayKey) {
+        this.bintrayKey = bintrayKey;
     }
 
     /**
