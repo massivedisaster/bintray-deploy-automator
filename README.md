@@ -32,4 +32,4 @@ The configuration file must be named `configuration.json`.
 }
 ```
 ### License
-[GNU LESSER GENERAL PUBLIC LICENSE](LICENSE.md)
+[MIT LICENSE](LICENSE.md)
