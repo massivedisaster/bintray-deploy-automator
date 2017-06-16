@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.gradle:gradle-tooling-api:3.5"
+    compile "org.gradle:gradle-tooling-api:4.0"
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
     compile 'com.google.code.gson:gson:2.8.0'
     runtime 'org.slf4j:slf4j-simple:1.7.10'
