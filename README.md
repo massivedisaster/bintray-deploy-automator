@@ -4,8 +4,8 @@ This project is a tool to publish artifacts to Bintray for gradle projects with 
 
 Usage
 -----
-With this automator you just have to create a  configuration file like the one below, build the jar and run it. It will clean and build your project and then for each module will run `bintrayUpload` task.
-At the end if no errors occurred it will update your readme specified configuration.
+With this automator you just have to create a configuration file like the one below, build the jar and run it. It will clean and build your project and then for each module will run `bintrayUpload` task.
+At the end if no errors occurred it will run the extra tasks from configuration.
 
 Configuration
 -------------
@@ -28,6 +28,10 @@ The configuration file must be named `configuration.json`.
     "module-1",
     "module-2",
     "module-3"
+  ],
+  "extraTasks": [
+      "task-1",
+      "module-1:task-2"
   ]
 }
 ```

@@ -14,9 +14,9 @@ import static com.massivedisaster.bintraydeployautomator.utils.FileUtils.readFil
  */
 public class Configuration {
     private String basePath = "./";
-    private String readmePath;
     private String version = "0.0.0-deploy_automator";
     private List<String> modules;
+    private List<String> extraTasks;
     private String bintrayUsername;
     private String bintrayKey;
     private String[] bintrayTasks;
@@ -39,15 +39,6 @@ public class Configuration {
      */
     public String getBasePath() {
         return basePath;
-    }
-
-    /**
-     * Gets de readme path.
-     *
-     * @return the readme path.
-     */
-    public String getReadmePath() {
-        return readmePath;
     }
 
     /**
@@ -101,13 +92,22 @@ public class Configuration {
     }
 
     /**
+     * get extra tasks from json.
+     *
+     * @return extra tasks to run.
+     */
+    public String[] getExtraTasks() {
+        return extraTasks.toArray(new String[0]);
+    }
+
+    /**
      * Get the bintray tasks from modules.
      *
      * @return list of bintray upload tasks.
      */
     private String[] getBintrayTasks() {
         if (modules == null) {
-            throw new IllegalArgumentException("modules can't be null");
+            return new String[]{"bintrayUpload"};
         }
 
         if (bintrayTasks == null) {
@@ -125,7 +125,7 @@ public class Configuration {
      *
      * @return true if readme needs to be updated, else false.
      */
-    public boolean canUpdateReadmeWithVersion() {
-        return !StringUtils.isEmpty(readmePath);
+    public boolean canRunExtraTasks() {
+        return extraTasks != null;
     }
 }
