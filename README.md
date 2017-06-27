@@ -21,7 +21,6 @@ The configuration file must be named `configuration.json`.
 // The json configuration
 {
   "basePath": "./project", // The path of your project
-  "readmePath": "./README.MD", // (Optional) If the project have a Readme with the actual version the automator can replace it
   "version": "0.1.9", // The new version of project to be uploaded
   // The list of modules to be uploaded to the bintray
   "modules": [

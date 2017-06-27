@@ -1,5 +1,5 @@
 {
-  "basePath": "../../StudioProjects/ADAL",
+  "basePath": "./",
   "version": "0.1.9",
   "modules": [
    "module-1",
