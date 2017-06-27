@@ -13,7 +13,7 @@ import java.io.File;
 /**
  * Bintray deploy automator.
  */
-public class Automator extends FileUtils {
+public class Automator {
 
     /**
      * Main method.
@@ -39,9 +39,8 @@ public class Automator extends FileUtils {
             // Clean build and deploy all projects.
             rebuildAndBintrayDeploy(gradleConnection, configuration);
 
-            // Replace version in readme if needed.
-            if (configuration.canUpdateReadmeWithVersion()) {
-                FileUtils.replaceAllSemVerInFile(configuration.getVersion(), configuration.getReadmePath());
+            if (configuration.canRunExtraTasks()) {
+                runExtraTasks(gradleConnection, configuration);
             }
 
         } catch (Exception e) {
@@ -62,5 +61,15 @@ public class Automator extends FileUtils {
      */
     private static void rebuildAndBintrayDeploy(ProjectConnection gradleConnection, Configuration configuration) {
         GradleUtils.runGradle(gradleConnection, configuration.getTasks(), configuration.getArguments());
+    }
+
+    /**
+     * Run extra tasks from project.
+     *
+     * @param gradleConnection the gradle connection.
+     * @param configuration    the configuration model.
+     */
+    private static void runExtraTasks(ProjectConnection gradleConnection, Configuration configuration) {
+        GradleUtils.runGradle(gradleConnection, configuration.getExtraTasks());
     }
 }
