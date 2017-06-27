@@ -70,6 +70,6 @@ public class Automator {
      * @param configuration    the configuration model.
      */
     private static void runExtraTasks(ProjectConnection gradleConnection, Configuration configuration) {
-        GradleUtils.runGradle(gradleConnection, configuration.getExtraTasks());
+        GradleUtils.runGradle(gradleConnection, configuration.getExtraTasks(), configuration.getArguments());
     }
 }
