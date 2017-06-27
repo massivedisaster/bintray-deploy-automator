@@ -23,6 +23,7 @@ hs_err_pid*
 
 # .ideia folder
 .idea/
+*.iml
 
 # Local configuration file (sdk path, etc)
 local.properties
