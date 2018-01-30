@@ -1,10 +1,10 @@
 package com.massivedisaster.bintraydeployautomator;
 
+import com.massivedisaster.bintraydeployautomator.model.Arguments;
 import com.massivedisaster.bintraydeployautomator.model.Configuration;
 import com.massivedisaster.bintraydeployautomator.utils.CommandLineUtils;
-import com.massivedisaster.bintraydeployautomator.utils.FileUtils;
+import com.massivedisaster.bintraydeployautomator.utils.ConsoleUtils;
 import com.massivedisaster.bintraydeployautomator.utils.GradleUtils;
-import javafx.util.Pair;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
@@ -24,17 +24,20 @@ public class Automator {
 
         ProjectConnection gradleConnection = null;
         try {
-            Pair<String, String> auth = CommandLineUtils.commandLineArgs(args);
+            Arguments auth = CommandLineUtils.commandLineArgs(args);
 
             // Get configuration from .json.
             Configuration configuration = Configuration.parseConfiguration("configuration.json");
 
-            configuration.setBintrayUsername(auth.getKey());
-            configuration.setBintrayKey(auth.getValue());
+            configuration.setBintrayUsername(auth.getUser());
+            configuration.setBintrayKey(auth.getKey());
+            configuration.setVerbose(auth.isVerbose());
 
             gradleConnection = GradleConnector.newConnector()
                     .forProjectDirectory(new File(configuration.getBasePath()))
                     .connect();
+
+            ConsoleUtils.DrawInConsoleBox("Start process");
 
             // Clean build and deploy all projects.
             rebuildAndBintrayDeploy(gradleConnection, configuration);

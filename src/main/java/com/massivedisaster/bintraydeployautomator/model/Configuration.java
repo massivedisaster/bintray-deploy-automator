@@ -2,9 +2,9 @@ package com.massivedisaster.bintraydeployautomator.model;
 
 import com.google.gson.Gson;
 import com.massivedisaster.bintraydeployautomator.utils.ArrayUtils;
-import org.gradle.internal.impldep.org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.massivedisaster.bintraydeployautomator.utils.FileUtils.readFileAsString;
@@ -20,6 +20,8 @@ public class Configuration {
     private String bintrayUsername;
     private String bintrayKey;
     private String[] bintrayTasks;
+    private String[] buildTasks;
+    private boolean isVerbose;
 
     /**
      * Parses the configuration file.
@@ -67,19 +69,30 @@ public class Configuration {
         this.bintrayKey = bintrayKey;
     }
 
+    public void setVerbose(boolean verbose) {
+        isVerbose = verbose;
+    }
+
     /**
      * Gets the arguments.
      *
      * @return list of arguments.
      */
     public String[] getArguments() {
-        return new String[]{
+        List<String> args = Arrays.asList(
                 String.format("-PbintrayUser=%s", bintrayUsername),
                 String.format("-PbintrayKey=%s", bintrayKey),
                 String.format("-PlibraryVersionName=%s", version),
                 "-PdryRun=false",
-                "-Pskippasswordprompts"
-        };
+                "-Pskippasswordprompts");
+
+        if (isVerbose) {
+            args.add("--stacktrace");
+            args.add("--info");
+            args.add("--debug");
+        }
+
+        return args.toArray(new String[args.size()]);
     }
 
     /**
@@ -88,7 +101,7 @@ public class Configuration {
      * @return tasks to run.
      */
     public String[] getTasks() {
-        return ArrayUtils.addAll(new String[]{"clean", "build"}, getBintrayTasks());
+        return ArrayUtils.addAll(getBuildTasks(), getBintrayTasks());
     }
 
     /**
@@ -98,6 +111,23 @@ public class Configuration {
      */
     public String[] getExtraTasks() {
         return extraTasks.toArray(new String[0]);
+    }
+
+    private String[] getBuildTasks() {
+        if (modules == null) {
+            return new String[]{"clean", "build"};
+        }
+
+        if (buildTasks == null) {
+            int size = modules.size();
+            buildTasks = new String[size * 2];
+            for (int i = 0; i < size; i = i + 2) {
+                buildTasks[i] = modules.get(i) + ":clean";
+                buildTasks[i + 1] = modules.get(i) + ":build";
+            }
+        }
+
+        return buildTasks;
     }
 
     /**
@@ -117,11 +147,12 @@ public class Configuration {
                 bintrayTasks[i] = modules.get(i) + ":bintrayUpload";
             }
         }
+
         return bintrayTasks;
     }
 
     /**
-     * Tells if readme needs to be updated with version.
+     * Tells if exists extra task to be executed.
      *
      * @return true if readme needs to be updated, else false.
      */
