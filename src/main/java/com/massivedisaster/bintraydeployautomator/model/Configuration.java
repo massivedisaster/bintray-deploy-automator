@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.massivedisaster.bintraydeployautomator.utils.ArrayUtils;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.massivedisaster.bintraydeployautomator.utils.FileUtils.readFileAsString;
@@ -79,12 +79,12 @@ public class Configuration {
      * @return list of arguments.
      */
     public String[] getArguments() {
-        List<String> args = Arrays.asList(
-                String.format("-PbintrayUser=%s", bintrayUsername),
-                String.format("-PbintrayKey=%s", bintrayKey),
-                String.format("-PlibraryVersionName=%s", version),
-                "-PdryRun=false",
-                "-Pskippasswordprompts");
+        List<String> args = new ArrayList<>();
+        args.add(String.format("-PbintrayUser=%s", bintrayUsername));
+        args.add(String.format("-PbintrayKey=%s", bintrayKey));
+        args.add(String.format("-PlibraryVersionName=%s", version));
+        args.add("-PdryRun=false");
+        args.add("-Pskippasswordprompts");
 
         if (isVerbose) {
             args.add("--stacktrace");

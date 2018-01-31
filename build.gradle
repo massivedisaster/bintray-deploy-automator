@@ -15,6 +15,7 @@ dependencies {
     compile "org.gradle:gradle-tooling-api:4.5"
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
     compile 'com.google.code.gson:gson:2.8.2'
+    compile 'me.tongfei:progressbar:0.5.5'
     runtime 'org.slf4j:slf4j-simple:1.7.10'
 }
 
