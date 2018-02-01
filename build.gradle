@@ -19,11 +19,11 @@ dependencies {
     runtime 'org.slf4j:slf4j-simple:1.7.10'
 }
 
-task generateVersion {
+// Task to create an dynamic class with configuration data.
+task generateConfig {
     inputs.property "version", project.version
-    //outputs.dir "$buildDir/generated/source"
     doFirst {
-        def versionFile = file("$buildDir/generated/source/Version.java")
+        def versionFile = file("$buildDir/generated/source/Config.java")
         versionFile.parentFile.mkdirs()
         versionFile.text =
                 """
@@ -32,8 +32,9 @@ package com.massivedisaster.bintraydeployautomator.utils;
 /**
  * Automatically generated file. DO NOT MODIFY
  */
-public class Version {
+public class Config {
     public static final String VERSION = "$project.version";
+    public static final String NAME = "BintrayDeployAutomator-$project.version";
 }
 """
     }
@@ -49,7 +50,7 @@ task updateReadme {
     }
 }
 
-compileJava.dependsOn generateVersion
+compileJava.dependsOn generateConfig
 compileJava.dependsOn updateReadme
 
 jar {

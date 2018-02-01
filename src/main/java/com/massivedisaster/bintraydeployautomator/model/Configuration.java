@@ -1,7 +1,6 @@
 package com.massivedisaster.bintraydeployautomator.model;
 
 import com.google.gson.Gson;
-import com.massivedisaster.bintraydeployautomator.utils.ArrayUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -101,7 +100,7 @@ public class Configuration {
      * @return tasks to run.
      */
     public String[] getTasks() {
-        return ArrayUtils.addAll(getBuildTasks(), getBintrayTasks());
+        return new String[]{"clean", "build", "bintrayUpload"};
     }
 
     /**
@@ -111,44 +110,6 @@ public class Configuration {
      */
     public String[] getExtraTasks() {
         return extraTasks.toArray(new String[0]);
-    }
-
-    private String[] getBuildTasks() {
-        if (modules == null) {
-            return new String[]{"clean", "build"};
-        }
-
-        if (buildTasks == null) {
-            int size = modules.size();
-            buildTasks = new String[size * 2];
-            for (int i = 0; i < size; i = i + 2) {
-                buildTasks[i] = modules.get(i) + ":clean";
-                buildTasks[i + 1] = modules.get(i) + ":build";
-            }
-        }
-
-        return buildTasks;
-    }
-
-    /**
-     * Get the bintray tasks from modules.
-     *
-     * @return list of bintray upload tasks.
-     */
-    private String[] getBintrayTasks() {
-        if (modules == null) {
-            return new String[]{"bintrayUpload"};
-        }
-
-        if (bintrayTasks == null) {
-            int size = modules.size();
-            bintrayTasks = new String[size];
-            for (int i = 0; i < size; i++) {
-                bintrayTasks[i] = modules.get(i) + ":bintrayUpload";
-            }
-        }
-
-        return bintrayTasks;
     }
 
     /**

@@ -32,7 +32,7 @@ public class CommandLineUtils {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
-            formatter.printHelp("Java -jar BintrayDeployAutomator-" + com.massivedisaster.bintraydeployautomator.utils.Version.VERSION + ".jar", options);
+            formatter.printHelp("Java -jar " + Config.NAME + ".jar", options);
 
             System.exit(1);
             return null;

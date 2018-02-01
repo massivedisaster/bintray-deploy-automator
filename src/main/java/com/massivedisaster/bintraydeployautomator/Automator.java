@@ -3,6 +3,7 @@ package com.massivedisaster.bintraydeployautomator;
 import com.massivedisaster.bintraydeployautomator.model.Arguments;
 import com.massivedisaster.bintraydeployautomator.model.Configuration;
 import com.massivedisaster.bintraydeployautomator.utils.CommandLineUtils;
+import com.massivedisaster.bintraydeployautomator.utils.Config;
 import com.massivedisaster.bintraydeployautomator.utils.ConsoleUtils;
 import com.massivedisaster.bintraydeployautomator.utils.GradleUtils;
 import me.tongfei.progressbar.ProgressBar;
@@ -42,36 +43,40 @@ public class Automator {
             if (outputFile != null) {
                 File output = new File(outputFile);
                 if (output.exists()) {
-                    output.delete();
+                    new FileWriter(outputFile).close();
                 }
-                pb = new ProgressBar("BintrayDeployAutomator-" + com.massivedisaster.bintraydeployautomator.utils.Version.VERSION, modules.size() * 2);
+                pb = new ProgressBar(Config.NAME, modules.size() * 2);
             }
 
-            gradleConnection = GradleConnector.newConnector()
-                    .forProjectDirectory(new File(configuration.getBasePath()))
+            gradleConnection = GradleConnector.newConnector().forProjectDirectory(new File(configuration.getBasePath()))
                     .connect();
 
             ConsoleUtils.DrawInConsoleBox("Start process");
 
-            if (pb != null) pb.start();
-            //clean and build
-            for (String module : modules) {
-                if (pb != null) pb.setExtraMessage("Clean and building module " + module + "...");
-                GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":clean", module + ":build"}, configuration.getArguments());
-                if (pb != null) pb.step();
-            }
+            if (modules != null) {
+                if (pb != null) pb.start();
+                //clean and build
+                for (String module : modules) {
+                    if (pb != null) pb.setExtraMessage("Clean and building module " + module + "...");
+                    GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":clean", module + ":build"},
+                            configuration.getArguments());
+                    if (pb != null) pb.step();
+                }
 
-            //clean and build
-            for (String module : modules) {
-                if (pb != null) pb.setExtraMessage("Uploading to bintray module " + module + "...");
-                GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":bintrayUpload"}, configuration.getArguments());
-                if (pb != null) pb.step();
+                //clean and build
+                for (String module : modules) {
+                    if (pb != null) pb.setExtraMessage("Uploading to bintray module " + module + "...");
+                    GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":bintrayUpload"}, configuration.getArguments());
+                    if (pb != null) pb.step();
+                }
+                if (pb != null) pb.stop();
+            } else {
+                GradleUtils.runGradle(gradleConnection, outputFile, configuration.getTasks(), configuration.getArguments());
             }
-            if (pb != null) pb.stop();
 
             if (configuration.canRunExtraTasks()) {
                 ConsoleUtils.DrawInConsoleBox("Executing extra tasks");
-                runExtraTasks(auth.getLogFile(), gradleConnection, configuration);
+                GradleUtils.runGradle(gradleConnection, auth.getLogFile(), configuration.getExtraTasks(), configuration.getArguments());
             }
 
             ConsoleUtils.DrawInConsoleBox("End process");
@@ -83,24 +88,16 @@ public class Automator {
             if (outputFile == null) {
                 System.out.println("Automator Error: " + e.toString());
             } else {
-                Writer output = new BufferedWriter(new FileWriter(outputFile));  //clears file every time
-                output.append("Automator Error: " + e.toString());
-                output.close();
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
+                out.append("Automator Error: ");
+                out.append(e.toString());
+                out.append("\n");
+                out.close();
             }
         } finally {
             if (gradleConnection != null) {
                 gradleConnection.close();
             }
         }
-    }
-
-    /**
-     * Run extra tasks from project.
-     *
-     * @param gradleConnection the gradle connection.
-     * @param configuration    the configuration model.
-     */
-    private static void runExtraTasks(String output, ProjectConnection gradleConnection, Configuration configuration) {
-        GradleUtils.runGradle(gradleConnection, output, configuration.getExtraTasks(), configuration.getArguments());
     }
 }

@@ -2,8 +2,8 @@ package com.massivedisaster.bintraydeployautomator.utils;
 
 import com.massivedisaster.bintraydeployautomator.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,5 +23,15 @@ public class FileUtils {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
         return new String(encoded, Charset.defaultCharset());
     }
-    
+
+
+    public static File createFile(String output) throws IOException {
+        File outFile = new File(output);
+        File parent = outFile.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+        outFile.createNewFile();
+        return outFile;
+    }
 }
