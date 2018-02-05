@@ -1,5 +1,6 @@
 group 'com.massivedisaster.bintraydeployautomator.Automator'
 version '0.0.5'
+apply from: "$project.rootDir/updateReadme.gradle"
 
 apply plugin: 'java'
 
@@ -11,11 +12,46 @@ repositories {
 }
 
 dependencies {
-    compile "org.gradle:gradle-tooling-api:4.0"
+    compile "org.gradle:gradle-tooling-api:4.5"
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
-    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'me.tongfei:progressbar:0.5.5'
     runtime 'org.slf4j:slf4j-simple:1.7.10'
 }
+
+// Task to create an dynamic class with configuration data.
+task generateConfig {
+    inputs.property "version", project.version
+    doFirst {
+        def versionFile = file("$buildDir/generated/source/Config.java")
+        versionFile.parentFile.mkdirs()
+        versionFile.text =
+                """
+package com.massivedisaster.bintraydeployautomator.utils;
+
+/**
+ * Automatically generated file. DO NOT MODIFY
+ */
+public class Config {
+    public static final String VERSION = "$project.version";
+    public static final String NAME = "BintrayDeployAutomator-$project.version";
+}
+"""
+    }
+}
+
+project.sourceSets.matching { it.name == "main" } .all {
+    it.java.srcDir "$buildDir/generated/source"
+}
+
+task updateReadme {
+    doLast {
+        processUpdateReadme file("$project.rootDir"), ".md", version.toString()
+    }
+}
+
+compileJava.dependsOn generateConfig
+compileJava.dependsOn updateReadme
 
 jar {
     baseName 'BintrayDeployAutomator'

@@ -1,14 +1,19 @@
 package com.massivedisaster.bintraydeployautomator;
 
+import com.massivedisaster.bintraydeployautomator.model.Arguments;
 import com.massivedisaster.bintraydeployautomator.model.Configuration;
+import com.massivedisaster.bintraydeployautomator.output.BarProgress;
+import com.massivedisaster.bintraydeployautomator.output.ConsoleProgress;
+import com.massivedisaster.bintraydeployautomator.output.ProgressManager;
 import com.massivedisaster.bintraydeployautomator.utils.CommandLineUtils;
-import com.massivedisaster.bintraydeployautomator.utils.FileUtils;
+import com.massivedisaster.bintraydeployautomator.utils.Config;
+import com.massivedisaster.bintraydeployautomator.utils.ConsoleUtils;
 import com.massivedisaster.bintraydeployautomator.utils.GradleUtils;
-import javafx.util.Pair;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
-import java.io.File;
+import java.io.*;
+import java.util.List;
 
 /**
  * Bintray deploy automator.
@@ -20,56 +25,83 @@ public class Automator {
      *
      * @param args command line arguments.
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
 
         ProjectConnection gradleConnection = null;
+        ProgressManager progressManager = null;
+        String outputFile = null;
         try {
-            Pair<String, String> auth = CommandLineUtils.commandLineArgs(args);
+            Arguments auth = CommandLineUtils.commandLineArgs(args);
 
             // Get configuration from .json.
             Configuration configuration = Configuration.parseConfiguration("configuration.json");
 
-            configuration.setBintrayUsername(auth.getKey());
-            configuration.setBintrayKey(auth.getValue());
+            List<String> modules = configuration.getModules();
+            boolean hasModules = modules != null;
+            int steps = hasModules ? modules.size() * 2 : 1;
 
-            gradleConnection = GradleConnector.newConnector()
-                    .forProjectDirectory(new File(configuration.getBasePath()))
-                    .connect();
-
-            // Clean build and deploy all projects.
-            rebuildAndBintrayDeploy(gradleConnection, configuration);
-
-            if (configuration.canRunExtraTasks()) {
-                runExtraTasks(gradleConnection, configuration);
+            configuration.setBintrayUsername(auth.getUser());
+            configuration.setBintrayKey(auth.getKey());
+            configuration.setVerbose(auth.isVerbose());
+            outputFile = auth.getLogFile();
+            if (outputFile != null) {
+                File output = new File(outputFile);
+                if (output.exists()) {
+                    new FileWriter(outputFile).close();
+                }
+                progressManager = new ProgressManager(new BarProgress(), Config.NAME, steps);
+            } else {
+                progressManager = new ProgressManager(new ConsoleProgress(), Config.NAME, steps);
             }
 
+            gradleConnection = GradleConnector.newConnector().forProjectDirectory(new File(configuration.getBasePath()))
+                    .connect();
+
+            ConsoleUtils.DrawInConsoleBox("Start process");
+
+            if (hasModules) {
+                progressManager.start();
+                //clean and build
+                for (String module : modules) {
+                    progressManager.logMessage("Clean and building module " + module + "...");
+                    GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":clean", module + ":build"},
+                            configuration.getArguments());
+                    progressManager.step();
+                }
+
+                //clean and build
+                for (String module : modules) {
+                    progressManager.logMessage("Uploading to bintray module " + module + "...");
+                    GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":bintrayUpload"}, configuration.getArguments());
+                    progressManager.step();
+                }
+                progressManager.stop();
+            } else {
+                GradleUtils.runGradle(gradleConnection, outputFile, configuration.getTasks(), configuration.getArguments());
+            }
+
+            if (configuration.canRunExtraTasks()) {
+                ConsoleUtils.DrawInConsoleBox("Executing extra tasks");
+                GradleUtils.runGradle(gradleConnection, auth.getLogFile(), configuration.getExtraTasks(), configuration.getArguments());
+            }
+
+            ConsoleUtils.DrawInConsoleBox("End process");
+
         } catch (Exception e) {
-            System.out.println("Automator Error: " + e.toString());
+            progressManager.stop();
+            if (outputFile == null) {
+                progressManager.logMessage("Automator Error: " + e.toString());
+            } else {
+                PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
+                out.append("Automator Error: ");
+                out.append(e.toString());
+                out.append("\n");
+                out.close();
+            }
         } finally {
             if (gradleConnection != null) {
                 gradleConnection.close();
             }
         }
-    }
-
-
-    /**
-     * Run build and upload to bintray.
-     *
-     * @param gradleConnection the gradle connection.
-     * @param configuration    the configuration model.
-     */
-    private static void rebuildAndBintrayDeploy(ProjectConnection gradleConnection, Configuration configuration) {
-        GradleUtils.runGradle(gradleConnection, configuration.getTasks(), configuration.getArguments());
-    }
-
-    /**
-     * Run extra tasks from project.
-     *
-     * @param gradleConnection the gradle connection.
-     * @param configuration    the configuration model.
-     */
-    private static void runExtraTasks(ProjectConnection gradleConnection, Configuration configuration) {
-        GradleUtils.runGradle(gradleConnection, configuration.getExtraTasks(), configuration.getArguments());
     }
 }

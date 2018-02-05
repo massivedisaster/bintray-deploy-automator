@@ -1,19 +1,27 @@
 package com.massivedisaster.bintraydeployautomator.utils;
 
-import javafx.util.Pair;
+import com.massivedisaster.bintraydeployautomator.model.Arguments;
 import org.apache.commons.cli.*;
 
 public class CommandLineUtils {
 
-    public static Pair<String, String> commandLineArgs(String[] args) {
+    public static Arguments commandLineArgs(String[] args) {
         Options options = new Options();
 
-        Option input = new Option("u", "user", true, "Bintray Username");
-        input.setRequired(true);
-        options.addOption(input);
+        Option user = new Option("u", "user", true, "Bintray Username (Required)");
+        user.setRequired(true);
+        options.addOption(user);
 
-        Option output = new Option("k", "key", true, "Bintray Key");
-        output.setRequired(true);
+        Option key = new Option("k", "key", true, "Bintray Key (Required)");
+        key.setRequired(true);
+        options.addOption(key);
+
+        Option verbose = new Option("v", "verbose", false, "Show more logs");
+        verbose.setRequired(false);
+        options.addOption(verbose);
+
+        Option output = new Option("o", "output", true, "Log output file");
+        output.setRequired(false);
         options.addOption(output);
 
         CommandLineParser parser = new DefaultParser();
@@ -24,16 +32,18 @@ public class CommandLineUtils {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
             System.out.println(e.getMessage());
-            formatter.printHelp("Java -jar BintrayDeployAutomator-0.0.4.jar", options);
+            formatter.printHelp("Java -jar " + Config.NAME + ".jar", options);
 
             System.exit(1);
             return null;
         }
 
-        String user = cmd.getOptionValue("user");
-        String key = cmd.getOptionValue("key");
+        String userArg = cmd.getOptionValue("user");
+        String keyArg = cmd.getOptionValue("key");
+        boolean isVerbose = cmd.hasOption("verbose");
+        String outputArg = cmd.getOptionValue("output");
 
-        return new Pair<>(user, key);
+        return new Arguments(userArg, keyArg, isVerbose, outputArg);
     }
 
 }
