@@ -37,7 +37,9 @@ public class GradleUtils {
                 .setStandardError(osErr)
                 .run();
 
-        os.close();
-        osErr.close();
+        if (output != null) {
+            os.close();
+            osErr.close();
+        }
     }
 }

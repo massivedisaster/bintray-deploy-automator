@@ -2,11 +2,13 @@ package com.massivedisaster.bintraydeployautomator;
 
 import com.massivedisaster.bintraydeployautomator.model.Arguments;
 import com.massivedisaster.bintraydeployautomator.model.Configuration;
+import com.massivedisaster.bintraydeployautomator.output.BarProgress;
+import com.massivedisaster.bintraydeployautomator.output.ConsoleProgress;
+import com.massivedisaster.bintraydeployautomator.output.ProgressManager;
 import com.massivedisaster.bintraydeployautomator.utils.CommandLineUtils;
 import com.massivedisaster.bintraydeployautomator.utils.Config;
 import com.massivedisaster.bintraydeployautomator.utils.ConsoleUtils;
 import com.massivedisaster.bintraydeployautomator.utils.GradleUtils;
-import me.tongfei.progressbar.ProgressBar;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
@@ -26,7 +28,7 @@ public class Automator {
     public static void main(String args[]) throws IOException {
 
         ProjectConnection gradleConnection = null;
-        ProgressBar pb = null;
+        ProgressManager progressManager = null;
         String outputFile = null;
         try {
             Arguments auth = CommandLineUtils.commandLineArgs(args);
@@ -35,6 +37,8 @@ public class Automator {
             Configuration configuration = Configuration.parseConfiguration("configuration.json");
 
             List<String> modules = configuration.getModules();
+            boolean hasModules = modules != null;
+            int steps = hasModules ? modules.size() * 2 : 1;
 
             configuration.setBintrayUsername(auth.getUser());
             configuration.setBintrayKey(auth.getKey());
@@ -45,7 +49,9 @@ public class Automator {
                 if (output.exists()) {
                     new FileWriter(outputFile).close();
                 }
-                pb = new ProgressBar(Config.NAME, modules.size() * 2);
+                progressManager = new ProgressManager(new BarProgress(), Config.NAME, steps);
+            } else {
+                progressManager = new ProgressManager(new ConsoleProgress(), Config.NAME, steps);
             }
 
             gradleConnection = GradleConnector.newConnector().forProjectDirectory(new File(configuration.getBasePath()))
@@ -53,23 +59,23 @@ public class Automator {
 
             ConsoleUtils.DrawInConsoleBox("Start process");
 
-            if (modules != null) {
-                if (pb != null) pb.start();
+            if (hasModules) {
+                progressManager.start();
                 //clean and build
                 for (String module : modules) {
-                    if (pb != null) pb.setExtraMessage("Clean and building module " + module + "...");
+                    progressManager.logMessage("Clean and building module " + module + "...");
                     GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":clean", module + ":build"},
                             configuration.getArguments());
-                    if (pb != null) pb.step();
+                    progressManager.step();
                 }
 
                 //clean and build
                 for (String module : modules) {
-                    if (pb != null) pb.setExtraMessage("Uploading to bintray module " + module + "...");
+                    progressManager.logMessage("Uploading to bintray module " + module + "...");
                     GradleUtils.runGradle(gradleConnection, outputFile, new String[]{module + ":bintrayUpload"}, configuration.getArguments());
-                    if (pb != null) pb.step();
+                    progressManager.step();
                 }
-                if (pb != null) pb.stop();
+                progressManager.stop();
             } else {
                 GradleUtils.runGradle(gradleConnection, outputFile, configuration.getTasks(), configuration.getArguments());
             }
@@ -82,11 +88,9 @@ public class Automator {
             ConsoleUtils.DrawInConsoleBox("End process");
 
         } catch (Exception e) {
-            if (pb != null) {
-                pb.stop();
-            }
+            progressManager.stop();
             if (outputFile == null) {
-                System.out.println("Automator Error: " + e.toString());
+                progressManager.logMessage("Automator Error: " + e.toString());
             } else {
                 PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile, true)));
                 out.append("Automator Error: ");
