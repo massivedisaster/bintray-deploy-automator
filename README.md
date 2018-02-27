@@ -1,38 +1,42 @@
-Bintray deploy automator
-===============
-This project is a tool to publish artifacts to Bintray for gradle projects with multiple modules that use [Gradle Bintray Plugin](https://github.com/bintray/gradle-bintray-plugin).
+# Bintray deploy automator
 
-Usage
------
-With this automator you just have to create a configuration file like the one below, build the jar and run it. It will clean and build your project and then for each module will run `bintrayUpload` task.
-At the end if no errors occurred it will run the extra tasks from configuration.
+This tool to publish artifacts to Bintray for gradle projects with multiple modules that use [Gradle Bintray Plugin](https://github.com/bintray/gradle-bintray-plugin) or [Novoda Bintray Release](https://github.com/novoda/bintray-release).
 
-Configuration
--------------
-### Install
-Run `jar` task from gradle and create configuration file.
+## How it works
 
-### How to run
-`java -jar BintrayDeployAutomator.jar -u Username -k Key`
+Bintray deploy automator clean and build your project's modules and then for each module will run `bintrayUpload` task. At the end if no errors occurred it will run the extra tasks.
 
-### Configuration file (configuration.json)
-The configuration file must be named `configuration.json`.
-```js
-// The json configuration
+## How to run
+
+1. Create a configuration file named `configuration.json` like the one below.
+
+```
 {
   "basePath": "./project", // The path of your project
-  "version": "0.1.9", // The new version of project to be uploaded
+  "version": "0.1.0", // The new version of project to be uploaded
   // The list of modules to be uploaded to the bintray
   "modules": [
-    "module-1",
     "module-2",
     "module-3"
   ],
+  // Extra tasks
   "extraTasks": [
       "task-1",
       "module-1:task-2"
   ]
 }
 ```
+
+2. Download the latest [release](https://github.com/massivedisaster/bintray-deploy-automator/releases).
+3. Execute `java -jar BintrayDeployAutomator-0.1.0.jar -u Username -k Key`
+
+### Generate release JAR
+
+Run `jar` task from gradle.
+
+* Linux/macOS: `./gradlew jar`
+* Windows: `gradlew.bat jar`
+
 ### License
+
 [MIT LICENSE](LICENSE.md)
