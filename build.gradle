@@ -1,5 +1,5 @@
 group 'com.massivedisaster.bintraydeployautomator.Automator'
-version '0.0.5'
+version '0.1.0'
 apply from: "$project.rootDir/updateReadme.gradle"
 
 apply plugin: 'java'

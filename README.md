@@ -10,10 +10,10 @@ Bintray deploy automator clean and build your project's modules and then for eac
 
 1. Create a configuration file named `configuration.json` like the one below.
 
-```json
+```
 {
   "basePath": "./project", // The path of your project
-  "version": "0.0.5", // The new version of project to be uploaded
+  "version": "0.1.0", // The new version of project to be uploaded
   // The list of modules to be uploaded to the bintray
   "modules": [
     "module-2",
@@ -28,11 +28,14 @@ Bintray deploy automator clean and build your project's modules and then for eac
 ```
 
 2. Download the latest [release](https://github.com/massivedisaster/bintray-deploy-automator/releases).
-3. Execute `java -jar BintrayDeployAutomator-0.0.5.jar -u Username -k Key`
+3. Execute `java -jar BintrayDeployAutomator-0.1.0.jar -u Username -k Key`
 
 ### Generate release JAR
 
 Run `jar` task from gradle.
+
+* Linux/macOS: `./gradlew jar`
+* Windows: `gradlew.bat jar`
 
 ### License
 
